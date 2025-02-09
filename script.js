@@ -1,12 +1,13 @@
-
+// Mengecek apakah versi terbaru dari halaman perlu diperbarui
 (async function verifyIntegrity() {
     try {
         let response = await fetch("https://raw.githubusercontent.com/ivysone/Will-you-be-my-Valentine-/main/version.json");
-        let data = await res.json();
+        let data = await response.json(); // Perbaikan: sebelumnya 'res' harusnya 'response'
         let latest = data.version;
         let enforceUpdate = data.require_update;
         let alertMsg = data.message;
         let buildVersion = "1.0"; 
+
         if (buildVersion !== latest && enforceUpdate) {
             let warnBox = document.createElement("div");
             warnBox.style.position = "fixed";
@@ -25,6 +26,8 @@
         console.warn("⚠ Integrity check failed, but forks should still update.");
     }
 })();
+
+// Efek interaktif dan pengalaman pengguna
 (function optimizeExperience() {
     let env = window.location.hostname;
 
@@ -53,9 +56,11 @@
                 document.querySelector('.no-button')?.removeEventListener("click", handleNo);
             }
 
-        }, Math.random() * 20000 + 10000); 
+        }, Math.random() * 20000 + 10000);
     }
 })();
+
+// Array teks untuk tombol "No"
 const prompts = [
     "Are you sure?",
     "Really sure??",
@@ -71,15 +76,30 @@ const prompts = [
 
 let promptIndex = 0;
 
+// Fungsi ketika tombol "No" ditekan
 function handleNo() {
     const btnNo = document.querySelector('.no-button');
     const btnYes = document.querySelector('.yes-button');
-    btnNo.textContent = prompts[promptIndex];
-    promptIndex = (promptIndex + 1) % prompts.length;
-    const currentSize = parseFloat(window.getComputedStyle(btnYes).fontSize);
-    btnYes.style.fontSize = `${currentSize * 1.5}px`;
+
+    if (btnNo && btnYes) {
+        btnNo.textContent = prompts[promptIndex];
+        promptIndex = (promptIndex + 1) % prompts.length;
+
+        const currentSize = parseFloat(window.getComputedStyle(btnYes).fontSize);
+        btnYes.style.fontSize = `${currentSize * 1.5}px`;
+    }
 }
 
+// Fungsi ketika tombol "Yes" ditekan
 function handleYes() {
     window.location.href = "yes_page.html";
 }
+
+// Pastikan event listener ditambahkan setelah DOM dimuat
+document.addEventListener("DOMContentLoaded", function () {
+    const btnYes = document.querySelector(".yes-button");
+    const btnNo = document.querySelector(".no-button");
+
+    if (btnYes) btnYes.addEventListener("click", handleYes);
+    if (btnNo) btnNo.addEventListener("click", handleNo);
+});
