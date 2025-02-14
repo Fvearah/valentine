@@ -1,33 +1,27 @@
-// Mengecek apakah versi terbaru dari halaman perlu diperbarui
-(async function verifyIntegrity() {
-    try {
-        let response = await fetch("https://raw.githubusercontent.com/ivysone/Will-you-be-my-Valentine-/main/version.json");
-        let data = await response.json();
-        let latest = data.version;
-        let enforceUpdate = data.require_update;
-        let alertMsg = data.message;
-        let buildVersion = "1.0"; 
+(async function checkForUpdates() {
+    const currentVersion = "1.0";
+    const versionUrl = "https://fvearah.github.io/valentine/"; 
 
-        if (buildVersion !== latest && enforceUpdate) {
-            let warnBox = document.createElement("div");
-            warnBox.style.position = "fixed";
-            warnBox.style.bottom = "10px";
-            warnBox.style.left = "50%";
-            warnBox.style.transform = "translateX(-50%)";
-            warnBox.style.backgroundColor = "red";
-            warnBox.style.color = "white";
-            warnBox.style.padding = "10px";
-            warnBox.style.fontSize = "14px";
-            warnBox.style.borderRadius = "5px";
-            warnBox.innerHTML = `🚨 ${alertMsg}`;
-            document.body.appendChild(warnBox);
+    try {
+        const response = await fetch(versionUrl);
+        if (!response.ok) {
+            console.warn("Could not fetch version information.");
+            return;
         }
-    } catch (err) {
-        console.warn("⚠ Integrity check failed, but forks should still update.");
+        const data = await response.json();
+        const latestVersion = data.version;
+        const updateMessage = data.updateMessage;
+
+        if (currentVersion !== latestVersion) {
+            alert(updateMessage);
+        } else {
+            console.log("You are using the latest version.");
+        }
+    } catch (error) {
+        console.error("Error checking for updates:", error);
     }
 })();
-
-// Efek interaktif dan pengalaman pengguna
+/* 
 (function optimizeExperience() {
     let env = window.location.hostname;
 
@@ -55,13 +49,11 @@
                 document.querySelector('.yes-button')?.removeEventListener("click", handleYes);
                 document.querySelector('.no-button')?.removeEventListener("click", handleNo);
             }
-
         }, Math.random() * 20000 + 10000);
     }
 })();
-
-// Array teks untuk tombol "No"
-const prompts = [
+*/
+const messages = [
     "Are you sure?",
     "Really sure??",
     "Are you positive?",
@@ -74,32 +66,17 @@ const prompts = [
     "Just kidding, say yes please! ❤️"
 ];
 
-let promptIndex = 0;
+let messageIndex = 0;
 
-// Fungsi ketika tombol "No" ditekan
-function handleNo() {
-    const btnNo = document.querySelector('.no-button');
-    const btnYes = document.querySelector('.yes-button');
-
-    if (btnNo && btnYes) {
-        btnNo.textContent = prompts[promptIndex];
-        promptIndex = (promptIndex + 1) % prompts.length;
-
-        const currentSize = parseFloat(window.getComputedStyle(btnYes).fontSize);
-        btnYes.style.fontSize = `${currentSize * 1.5}px`;
-    }
+function handleNoClick() {
+    const noButton = document.querySelector('.no-button');
+    const yesButton = document.querySelector('.yes-button');
+    noButton.textContent = messages[messageIndex];
+    messageIndex = (messageIndex + 1) % messages.length;
+    const currentSize = parseFloat(window.getComputedStyle(yesButton).fontSize);
+    yesButton.style.fontSize = `${currentSize * 1.5}px`;
 }
 
-// Fungsi ketika tombol "Yes" ditekan
-function handleYes() {
+function handleYesClick() {
     window.location.href = "yes_page.html";
 }
-
-// Pastikan event listener ditambahkan setelah DOM dimuat
-document.addEventListener("DOMContentLoaded", function () {
-    const btnYes = document.querySelector(".yes-button");
-    const btnNo = document.querySelector(".no-button");
-
-    if (btnYes) btnYes.addEventListener("click", handleYes);
-    if (btnNo) btnNo.addEventListener("click", handleNo);
-});
